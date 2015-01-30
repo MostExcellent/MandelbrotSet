@@ -5,7 +5,7 @@ boolean canClick;
 void setup()
 {
   canClick = false;
-  centerX = 0;
+  centerX = -0.75;
   centerY = 0;
   currentZoom = 1;
   noLoop();
@@ -44,17 +44,18 @@ void mandelbrot(double xCoord, double yCoord, double zoom)
   double xtemp;
   int iteration;
   double maxiter = zoom*50;
-  int t;
+  float t;
   int cT;
   double iC;
   int c1;
   int c2;
   double iCpct;
-  float cFinal;
   double mu;
   double xFocus = (xCoord + (1.75/zoom));
   double yFocus = -(yCoord + (-1/zoom));
   float pIter = 0;
+  loadPixels();
+  pLoop:
   for(int i = 0; i < height; i++)
   {
    for(int n = 0; n < width; n++)
@@ -75,16 +76,17 @@ void mandelbrot(double xCoord, double yCoord, double zoom)
      iC = iCpct*254;
      c1 = (int)iC;
      c2 = c1 + 1;
-     cFinal = linearInterpolate(c1,c2,(float)(mu % 1));
+     t = linearInterpolate(c1,c2,(float)(mu % 1));
      if(iteration == maxiter)
      {
-       cFinal = 0;
+       pixels[(i*width)+n] = color(0);
+     }else{
+       pixels[(i*width)+n] = color(255-t,Math.abs(128-t),t);
      }
-     stroke(0,0,cFinal);
-     point(n,i);
      System.out.println((pIter/(height*width))*100 + " % done");
    }
   }
+  updatePixels();
 }
 float linearInterpolate(float a, float b, float f)
 {
