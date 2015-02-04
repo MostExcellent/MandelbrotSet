@@ -83,7 +83,6 @@ void mandelbrot(double xCoord, double yCoord, double zoom)
      }else{
        pixels[(i*width)+n] = color(255-t,Math.abs(128-t),t);
      }
-     System.out.println((pIter/(height*width))*100 + " % done");
    }
   }
   updatePixels();
