@@ -19,6 +19,7 @@ void draw()
   canClick = false;
   background(0);
   mandelbrot(centerX,centerY,currentZoom);
+  saveFrame("mbrot-###.tiff");
   canClick = true;
 }
 void mousePressed()
@@ -71,7 +72,7 @@ void mandelbrot(double xCoord, double yCoord, double zoom)
        x = xtemp;
      }
      pIter++;
-     mu = (double)iteration - (Math.log(Math.log(Math.sqrt(x*x+y*y))) / Math.log(2))+1;
+     mu = (double)iteration - ((Math.log(Math.log(Math.sqrt(x*x+y*y))) / Math.log(2)))+1;
      iCpct = (mu/maxiter);
      iC = iCpct*254;
      c1 = (int)iC;
@@ -89,5 +90,5 @@ void mandelbrot(double xCoord, double yCoord, double zoom)
 }
 float linearInterpolate(float a, float b, float f)
 {
-    return a + f * (b - a);
+    return (1-f) * a + f * b;
 }

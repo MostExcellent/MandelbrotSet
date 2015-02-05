@@ -21,7 +21,7 @@ boolean canClick;
 public void setup()
 {
   canClick = false;
-  centerX = 0;
+  centerX = -0.75f;
   centerY = 0;
   currentZoom = 1;
   noLoop();
@@ -35,6 +35,7 @@ public void draw()
   canClick = false;
   background(0);
   mandelbrot(centerX,centerY,currentZoom);
+  saveFrame("mbrot-###.tiff");
   canClick = true;
 }
 public void mousePressed()
@@ -60,14 +61,18 @@ public void mandelbrot(double xCoord, double yCoord, double zoom)
   double xtemp;
   int iteration;
   double maxiter = zoom*50;
-  int t;
+  float t;
   int cT;
   double iC;
+  int c1;
+  int c2;
   double iCpct;
   double mu;
   double xFocus = (xCoord + (1.75f/zoom));
   double yFocus = -(yCoord + (-1/zoom));
   float pIter = 0;
+  loadPixels();
+  pLoop:
   for(int i = 0; i < height; i++)
   {
    for(int n = 0; n < width; n++)
@@ -76,26 +81,32 @@ public void mandelbrot(double xCoord, double yCoord, double zoom)
      cY = map(i, 0, height, -2/(float)zoom, 0) + yFocus;
      x = 0;
      y = 0;
-     for(iteration = 0;x*x + y*y < 2*2 && iteration <= maxiter; iteration++)
+     for(iteration = 0;x*x + y*y < 2*2 && iteration < maxiter; iteration++)
      {
        xtemp = x*x - y*y + cX;
        y = 2*x*y + cY;
        x = xtemp;
-       iteration++;
      }
      pIter++;
-     mu = (double)iteration - (Math.log(Math.log(Math.sqrt(x*x+y*y))) / Math.log(2));
+     mu = (double)iteration - ((Math.log(Math.log(Math.sqrt(x*x+y*y))) / Math.log(2)))+1;
      iCpct = (mu/maxiter);
-     iC = iCpct*iCpct*255;
-     if(mu == Double.NaN)
+     iC = iCpct*254;
+     c1 = (int)iC;
+     c2 = c1 + 1;
+     t = linearInterpolate(c1,c2,(float)(mu % 1));
+     if(iteration == maxiter)
      {
-       iC = 0;
+       pixels[(i*width)+n] = color(0);
+     }else{
+       pixels[(i*width)+n] = color(255-t,Math.abs(128-t),t);
      }
-     stroke(0,0,(float)iC);
-     point(n,i);
-     System.out.println((pIter/(height*width))*100 + " % done");
    }
   }
+  updatePixels();
+}
+public float linearInterpolate(float a, float b, float f)
+{
+    return (1-f) * a + f * b;
 }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "--full-screen", "--bgcolor=#666666", "--stop-color=#cccccc", "MandelbrotSet" };
